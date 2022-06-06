@@ -2,8 +2,8 @@
 Example Send2UE Template 
 
 Here's an extension I've been developing that I thought would be useful as a starting place for others. 
-Notable features
--Three different modes for asset renaming using an Enum ("Final", "Misc" and "Test) available in extension settings
+Notable features:
+- Three different modes for asset renaming using an Enum ("Final", "Misc" and "Test) available in extension settings
 - Helper function to rename according to our internal standard, which puts all the assets in their own subdirectory under Game/Art/Level, e.g. "/Game/Art/L01/SM_MyAsset_AssetTag
 - Debugging tools, to enable easy to read console prints and/or turn off the extension entirely and use default Send2UE functionality, all settable 
 

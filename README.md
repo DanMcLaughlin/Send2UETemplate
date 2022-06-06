@@ -15,7 +15,7 @@ If anybody knows how to make the get_XYZ_name function a part of the XYZExtensio
 
 Example debugging output. Developing an extension can be difficult but having good output like this is really helpful. 
 
-'''
+```
 ****XYZ Extension***
 Before pre_operation
 After pre_operation
@@ -54,4 +54,4 @@ Before pre_mesh_export
       'skeleton_asset_path': '',
       'sockets': {}}
 After pre_mesh_export
-'''
+```

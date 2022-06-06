@@ -9,4 +9,6 @@ Notable features:
 
 This is a WIP internally, but is at a state such that it can provide inspiration or as a template to get started, it should probably not be used as-is.
 
-The most likely starting place is to modify the 'XYZ' to your initials or name, and to modify "get_XYZ_name" to suit your folder structure
+The most likely starting place is to modify the 'XYZ' to your initials or name, and to modify "get_XYZ_name" to suit your folder structure. 
+
+If anybody knows how to make the get_XYZ_name function a part of the XYZExtension extension class let me know, despite a bunch of experimentation I wasn't able to get that to work so had to stick it up outside. Not a big deal either way but I like things to be tidy, and class helper functions would be better. 

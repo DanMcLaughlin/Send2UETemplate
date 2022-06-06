@@ -12,3 +12,46 @@ This is a WIP internally, but is at a state such that it can provide inspiration
 The most likely starting place is to modify the 'XYZ' to your initials or name, and to modify "get_XYZ_name" to suit your folder structure. 
 
 If anybody knows how to make the get_XYZ_name function a part of the XYZExtension extension class let me know, despite a bunch of experimentation I wasn't able to get that to work so had to stick it up outside. Not a big deal either way but I like things to be tidy, and class helper functions would be better. 
+
+Example debugging output. Developing an extension can be difficult but having good output like this is really helpful. 
+
+'
+****XYZ Extension***
+Before pre_operation
+After pre_operation
+
+Before pre_validations
+After pre_validations
+
+Before get_XYZ_name
+   Asset subfolder:
+   Asset Name: TheBossMesh
+   Splits: ['TheBossMesh']
+      Attempted formatted but found unformatted misc asset: TheBossMesh
+   path: /Game/Art/Misc
+   asset_name: TheBossMesh
+After get_XYZ_name
+
+Before pre_mesh_export
+   Initial asset_data:
+{     'asset_folder': '/',
+      'asset_path': '/TheBossMesh',
+      'asset_type': 'MESH',
+      'file_path': 'E:\\Blender\\PowerSave\\Meshes\\TheBossMesh.fbx',
+      'import_mesh': True,
+      'lods': None,
+      'skeletal_mesh': False,
+      'skeleton_asset_path': '',
+      'sockets': {}}
+   Modified asset_data:
+{     'asset_folder': '/Game/Art/Misc',
+      'asset_path': '/Game/Art/Misc/TheBossMesh',
+      'asset_type': 'MESH',
+      'file_path': 'E:\\Blender\\PowerSave\\Meshes\\TheBossMesh.fbx',
+      'import_mesh': True,
+      'lods': None,
+      'skeletal_mesh': False,
+      'skeleton_asset_path': '',
+      'sockets': {}}
+After pre_mesh_export
+'

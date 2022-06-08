@@ -148,15 +148,18 @@ def get_XYZ_name(self):
             # The name wasn't formatted correctly, but is supposed to be "Finished" - put it in Miscellanous
             print("      Found improperly formatted asset name: " + asset_name)
             print("      Asset goes into Misc")
-            path = '/Game/Misc/' + asset_name 
+            path = '/Game/' + self.extensions.XYZ.ArtFolder + '/Misc'
+    
     elif self.extensions.XYZ.Type == 'MISC':
         if self.extensions.XYZ.Logging == True:
             print("      Found Misc asset: " + asset_name)
-        path = '/Game/Art/Misc' 
+        path = '/Game/' + self.extensions.XYZ.ArtFolder + '/Misc' 
+    
     elif self.extensions.XYZ.Type == 'TEST':
         if self.extensions.XYZ.Logging == True:
             print("      Found Test asset: " + asset_name)
-        path = '/Game/Art/Test'
+        path = '/Game/' + self.extensions.XYZ.ArtFolder + '/Test'
+    
     else:
         print("Error - this should not occur")
     
@@ -187,8 +190,11 @@ class XYZExtension(ExtensionBase):
     ]
     Type: bpy.props.EnumProperty(items = asset_type)
     
-    Enable: bpy.props.BoolProperty(name = 'Enable', description='Enable XYZ Extension', default = True)
+    Enable: bpy.props.BoolProperty(name = 'Enable extension', description='Enable XYZ Extension', default = True)
     Logging: bpy.props.BoolProperty(name = 'Logging', description='Enable console logging', default = False)
+    ArtFolder: bpy.props.StringProperty(default = 'Art')
+    AnimationFolder: bpy.props.StringProperty(default = 'Animation')
+    NestedAnimation: bpy.props.BoolProperty(name = 'Animation subfolder', description='Place the animation folder as a subfolder of the asset folder, e.g. \"Art/Asset/Animation\"', default = True)
     
     # -----------------------------------------------------------------------------
     # Properties
@@ -202,11 +208,17 @@ class XYZExtension(ExtensionBase):
         :param bpy.types.UILayout layout: The extension layout area.
         """
         row = layout.row()
-        row.prop(self.extensions.XYZ, 'Type')
+        row.prop(self.extensions.XYZ, 'Type', text = "Asset status")   
+        row = layout.row()
+        row.prop(self.extensions.XYZ, 'ArtFolder', text = "Art folder")
+        row = layout.row()
+        row.prop(self.extensions.XYZ, 'AnimationFolder', text = "Animation folder")
+        row = layout.row()        
+        row.prop(self.extensions.XYZ, 'NestedAnimation', text = "Nested animation folder")
         row = layout.row()
         row.label(text = 'Debugging: ')
-        row.prop(self.extensions.XYZ, 'Enable')
-        row.prop(self.extensions.XYZ, 'Logging')
+        row.prop(self.extensions.XYZ, 'Enable', text = "Enable extension")
+        row.prop(self.extensions.XYZ, 'Logging', text = "Enable logging")
 
 
     # -----------------------------------------------------------------------------
@@ -221,17 +233,26 @@ class XYZExtension(ExtensionBase):
         if self.extensions.XYZ.Enable == False:
             return;
             
+        pp = pprint.PrettyPrinter(indent=3)
+        
         if self.extensions.XYZ.Logging == True:
             print()
             print("****XYZ Extension***")
             print('Before pre_operation')
+            pp.pprint(self)
             
-        # Set these properly - the addon won't work with them anything else. It appears
-        # The rest of the addon does some magic additions 
-        self.unreal_mesh_folder_path = '/'
-        self.unreal_animation_folder_path = '/'
+        # Set these initially - no this causes issues
+        #self.unreal_mesh_folder_path = '/Game/' + self.extensions.XYZ.ArtFolder
+        
+        #if self.extensions.XYZ.NestedAnimation == True:
+        #    self.unreal_animation_folder_path = self.unreal_mesh_folder_path + self.extensions.XYZ.AnimationFolder
+        #else:
+        #    self.unreal_animation_folder_path = self.unreal_mesh_folder_path
+        
         
         if self.extensions.XYZ.Logging == True:
+            print("   Mesh folder path: " + self.unreal_mesh_folder_path)
+            print("   Animation folder path: " + self.unreal_animation_folder_path);
             print('After pre_operation')
             print()
             
@@ -258,12 +279,9 @@ class XYZExtension(ExtensionBase):
             print("   Asset Data:")
             pp.pprint(self.asset_data)
         
+        # No asset validations can occur here, this is only for global validations
         # asset_data = self.asset_data[self.asset_id]
-        
         # valid, asset_name, asset_subfolder, splits, level, variation = valid_XYZ_name(self)        
-
-        # TBD unfortunately we can't do asset validations here
-        # this seems to be for general validations - not sure what those are
         # if self.extensions.XYZ.Type == 'DONE':
             # if valid == True:
                 # if self.extensions.XYZ.Logging == True:
@@ -304,6 +322,18 @@ class XYZExtension(ExtensionBase):
         asset_data['asset_folder'] = path         
         asset_data['asset_path'] = path + "/" + asset_name 
         
+        # Hack or feature? Store the determined mesh location in these
+        # places so that pre_animation_export gets some useful information
+        # In other words set these up for the animation 
+        
+        self.unreal_mesh_folder_path = path
+        
+        if self.extensions.XYZ.NestedAnimation == True:
+            self.unreal_animation_folder_path = path + "/" + self.extensions.XYZ.AnimationFolder
+        else:
+            # Note this needs to be fully qualified, e.g. "Game/"
+            self.unreal_animation_folder_path = path
+        
         if self.extensions.XYZ.Logging == True:
             print("   Modified asset_data: ")         
             pp.pprint(asset_data)
@@ -327,17 +357,19 @@ class XYZExtension(ExtensionBase):
 
         pp = pprint.PrettyPrinter(indent=6)
         asset_data = self.asset_data[self.asset_id]
-        path, asset_name = get_XYZ_name(self)
+        #path, asset_name = get_XYZ_name(self)
+        
+        # Already set up previously by the pre_mesh_export
+        # Note however this doesn't presently support an animation export only 
+        path = self.unreal_animation_folder_path
         
         if self.extensions.XYZ.Logging == True:
             print("Before pre_animation_export")
+            #print("   path: " + path + ", asset_name: " + asset_name)
             print("   Initial asset_data: ")
             pp.pprint(asset_data)        
   
-        path = path + "/" + "Animation" 
-     
-        asset_data['asset_folder'] = path  
-        asset_data['skeleton_asset_path'] = path + "/" + asset_name 
+        # The name has already been set up properly by the mesh export, by using self.unreal_animation_folder_path
         
         if self.extensions.XYZ.Logging == True:
             print("   Modified asset_data:")        
@@ -356,7 +388,8 @@ class XYZExtension(ExtensionBase):
         :param Send2UeSceneProperties self: The scene property group that contains all the addon properties.
         """
         if self.extensions.XYZ.Enable == False:
-            return;        
+            return;
+            
         if self.extensions.XYZ.Logging == True:
             print('Before post_import')
             

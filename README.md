@@ -60,3 +60,4 @@ After pre_mesh_export
 - Add a utility function to clear out the Unreal assets from the last export, which is common as failed exports, test exports and such are really common
 - Add a utility function to show where exactly the assets went, if it's early in the morning you're not always clear on what you did :) 
 - Per asset validations? There were some discussions on that I think
+- Maybe some documentation, copy the stuff in the code externally
